@@ -1,0 +1,98 @@
+/**************************************************************
+    Problem: 2247
+    User: s9msst
+    Language: Java
+    Result: Success
+    Time:230 ms
+    Memory:12388 kb
+****************************************************************/
+ 
+ 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.StringTokenizer;
+ 
+public class Main {
+ 
+    static class node {
+        int s;
+        int e;
+ 
+        public node(int s, int e) {
+            this.s = s;
+            this.e = e;
+        }
+ 
+        public int getS() {
+            return s;
+        }
+ 
+        public int getE() {
+            return e;
+        }
+ 
+    }
+ 
+    public static void main(String[] args) throws NumberFormatException, IOException {
+ 
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+ 
+        int N = Integer.parseInt(in.readLine());
+        List<node> arr = new ArrayList<node>();
+        int[] tmp = new int[2];
+        int S = 0;
+        int E = 0;
+        int stayMax = 0; // 한사람이라도 있는 시간 최대값
+        int notStayMax = 0;// 아무도 없는 시간 최대값
+ 
+        // 입력값 배열에 저장하기
+        for (int i = 0; i < N; i++) {
+            StringTokenizer st = new StringTokenizer(in.readLine());
+            S = Integer.parseInt(st.nextToken());
+            E = Integer.parseInt(st.nextToken());
+            arr.add(new node(S, E));
+        }
+ 
+        // 배열 정렬하기
+//      arr.sort(Comparator.comparing(node::getS).thenComparing(node::getE).reversed());
+//      arr.sort(Comparator.comparing(node::getS));
+ 
+        Collections.sort(arr, new Comparator<node>() {
+            @Override
+            public int compare(node o1, node o2) {
+                return o1.s - o2.s;
+            }
+        });
+ 
+        for (int i = 0; i < N; i++) {
+            node node = arr.get(i);
+            S = node.s;
+            E = node.e;
+ 
+            if (S <= tmp[1]) { // 새로 들어온 S값이 전의 E값보다 작거나 같으면
+                if (tmp[1] < E)
+                    tmp[1] = E;
+ 
+                if (stayMax < tmp[1] - tmp[0])
+                    stayMax = tmp[1] - tmp[0];
+ 
+            } else { // 새로 들어온 S값이 E보다 크면
+                if (notStayMax < S - tmp[1]) 
+                    notStayMax = S - tmp[1];
+                 
+                tmp[0] = S;
+                tmp[1] = E;
+            }
+ 
+        }
+ 
+        System.out.println(stayMax + " " + notStayMax);
+ 
+    }
+ 
+}
