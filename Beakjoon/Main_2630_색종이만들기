@@ -1,0 +1,86 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+/*
+* 백준 2630 색종이 만들기
+*/
+public class Main {
+	static boolean[][] visited;
+	static int[][] map;
+	static int whitecnt, bluecnt;
+
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+		int N = Integer.parseInt(in.readLine());
+		map = new int[N][N];
+		visited = new boolean[N][N];
+		StringTokenizer st;
+
+		boolean flag = true;
+		int tmp = -1;
+		for (int i = 0; i < N; i++) {
+			st = new StringTokenizer(in.readLine());
+			for (int j = 0; j < N; j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
+				if (i != 0 && j != 0 && map[i][j] != tmp) { // 전체가 같은지 확인
+					flag = false;
+				}
+				tmp = map[i][j];
+			}
+		}
+
+		if (flag) { // 만약 들어온 데이터가 색종이 하나라면
+			if (map[1][1] == 1)
+				bluecnt++;
+			else
+				whitecnt++;
+		} else { 
+			// 왼위 : 가로 1 ~ 2/N까지 / 세로 1 ~ 2/N까지
+			// 오위 : 가로 2/N ~ N까지 / 세로 1 ~ 2/N까지
+			// 왼아래 : 가로 1 ~ 2/N까지 / 세로 2/N ~ N까지
+			// 오아래 : 가로 2/N ~ N까지 / 세로 2/N ~ N까지
+      // 사등분 하자!
+			re(0, N / 2, 0, N / 2); 
+			re(N / 2, N, 0, N / 2);
+			re(0, N / 2, N / 2, N);
+			re(N / 2, N, N / 2, N);
+		}
+
+		System.out.println(whitecnt);
+		System.out.println(bluecnt);
+
+	}
+
+	public static void re(int colstart, int colend, int rowstart, int rowend) {
+
+		int tmp1 = map[rowstart][colstart];
+		boolean flag = true;
+		for (int r = rowstart; r < rowend; r++) {
+			for (int c = colstart; c < colend; c++) {
+				if (!visited[r][c] && tmp1 != map[r][c]) {
+					flag = false;
+					re(colstart, colstart + (colend - colstart) / 2, rowstart, rowstart + (rowend - rowstart) / 2);
+					re(colstart + (colend - colstart) / 2, colend, rowstart, rowstart + (rowend - rowstart) / 2);
+					re(colstart, colstart + (colend - colstart) / 2, rowstart + (rowend - rowstart) / 2, rowend);
+					re(colstart + (colend - colstart) / 2, colend, rowstart + (rowend - rowstart) / 2, rowend);
+				}
+			}
+		}
+
+		if (flag) {
+			if (tmp1 == 1)
+				bluecnt++;
+			else
+				whitecnt++;
+
+			for (int r = rowstart; r < rowend; r++) {
+				for (int c = colstart; c < colend; c++) {
+					visited[r][c] = true;
+				}
+			}
+		}
+	}
+
+}
